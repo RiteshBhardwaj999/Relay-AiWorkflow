@@ -21,8 +21,13 @@ spring:
     redis:
       host: localhost
       port: 6380
+      repositories:
+        enabled: false
   thymeleaf:
     cache: false
+  jackson:
+    property-naming-strategy: SNAKE_CASE
+    default-property-inclusion: non_null
 
 server:
   port: 8080

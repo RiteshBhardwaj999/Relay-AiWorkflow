@@ -3,9 +3,10 @@ package com.relay.mockworld;
 import com.relay.config.RelayProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.http.client.JdkClientHttpRequestFactory;
 import org.springframework.web.client.RestClient;
 
+import java.net.http.HttpClient;
 import java.time.Duration;
 
 /**
@@ -18,8 +19,10 @@ public class MockWorldConfig {
     @Bean
     public RestClient mockWorldRestClient(RelayProperties properties) {
         RelayProperties.MockWorld cfg = properties.getMockWorld();
-        SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
-        factory.setConnectTimeout(Duration.ofMillis(cfg.getTimeoutMs()));
+        HttpClient httpClient = HttpClient.newBuilder()
+                .connectTimeout(Duration.ofMillis(cfg.getTimeoutMs()))
+                .build();
+        JdkClientHttpRequestFactory factory = new JdkClientHttpRequestFactory(httpClient);
         factory.setReadTimeout(Duration.ofMillis(cfg.getTimeoutMs()));
         return RestClient.builder()
                 .baseUrl(cfg.getBaseUrl())

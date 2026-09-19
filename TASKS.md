@@ -3,7 +3,7 @@
 Living status board. Legend: ✅ done · 🚧 in progress · ⬜ not started.
 Plan: [`docs/PLAN.md`](docs/PLAN.md) · Prompts: [`docs/PROMPTS.md`](docs/PROMPTS.md)
 
-_Last updated: 2026-09-19 (Phases 0–1 complete)_
+_Last updated: 2026-09-19 (Phases 0–5 complete)_
 
 ## Setup / meta
 - ✅ Understand requirements (both PDFs) + inspect repo
@@ -29,10 +29,10 @@ _Last updated: 2026-09-19 (Phases 0–1 complete)_
 |---|-------|--------|-------|
 | 0 | Project scaffolding (Boot+Maven, compose, auth, error handler) | ✅ | boots; health UP; 401/404 verified |
 | 1 | Data & persistence (entities, migrations, seed loader) | ✅ | 6 tables, indexes; 4 seeds published; catalog 7 nodes/3 triggers |
-| 2 | Workflow CRUD & validation (draft→publish, snapshot) | ⬜ | blocked by 1 |
-| 3 | Triggers (manual + webhook secret, enqueue) | ⬜ | blocked by 2 |
-| 4 | Engine v1 happy path (Redis queue, worker, templates) | ⬜ | `wf_expense_approval` |
-| 5 | Deterministic nodes (http/condition/delay/notify) | ⬜ | idempotency + timeouts |
+| 2 | Workflow CRUD & validation (draft→publish, snapshot) | ✅ | list/create/get/publish/update; 422/409/404 verified; snapshot in P3 |
+| 3 | Triggers (manual + webhook secret, enqueue) | ✅ | 202+run_id; 401/403/409 verified; durable QueueJob + Redis push |
+| 4 | Engine v1 happy path (Redis queue, worker, templates) | ✅ | wf_expense_approval → succeeded; condition+templates+trace verified; notify still stub |
+| 5 | Deterministic nodes (http/condition/delay/notify) | ✅ | slow_fulfillment E2E; durable non-blocking delay; idem keys once in ledger |
 | 6 | Durability & crash recovery | ⬜ | `duplication_check.py` |
 | 7 | Approvals, retries, caps | ⬜ | `wf_runaway` stops @12 |
 | 8 | AI node (adapter+mock, schema, repair retry) | ⬜ | `wf_support_triage` |
