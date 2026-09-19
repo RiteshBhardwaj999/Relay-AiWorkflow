@@ -1,0 +1,46 @@
+spring:
+  application:
+    name: relay
+  datasource:
+    url: jdbc:postgresql://localhost:5433/relay
+    username: relay
+    password: relay
+  jpa:
+    hibernate:
+      # Flyway is the single source of truth for the schema; entities are validated at
+      # runtime by the persistence integration tests rather than by Hibernate DDL validate.
+      ddl-auto: none
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+  data:
+    redis:
+      host: localhost
+      port: 6380
+  thymeleaf:
+    cache: false
+
+server:
+  port: 8080
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+relay:
+  auth:
+    # Bearer token required for /workflows, /runs, /approvals. Blank = auth disabled (dev).
+    token: ${RELAY_AUTH_TOKEN:relay-dev-token}
+  mock-world:
+    base-url: ${RELAY_MOCK_WORLD_URL:http://localhost:9210}
+    timeout-ms: 5000
+
+logging:
+  level:
+    com.relay: DEBUG
