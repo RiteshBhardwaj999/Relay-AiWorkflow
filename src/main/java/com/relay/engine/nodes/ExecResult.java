@@ -21,6 +21,7 @@ public record ExecResult(
         String nextNodeId,
         Instant resumeAt,
         String errorMessage,
+        boolean retryable,
         String idempotencyKey,
         Integer tokensPrompt,
         Integer tokensCompletion) {
@@ -33,26 +34,32 @@ public record ExecResult(
     }
 
     public static ExecResult continueTo(JsonNode output, String nextNodeId) {
-        return new ExecResult(Outcome.CONTINUE, output, nextNodeId, null, null, null, null, null);
+        return new ExecResult(Outcome.CONTINUE, output, nextNodeId, null, null, false, null, null, null);
     }
 
     public static ExecResult sleepUntil(JsonNode output, String nextNodeId, Instant resumeAt) {
-        return new ExecResult(Outcome.SLEEP, output, nextNodeId, resumeAt, null, null, null, null);
+        return new ExecResult(Outcome.SLEEP, output, nextNodeId, resumeAt, null, false, null, null, null);
     }
 
+    /** Deterministic failure — do not retry. */
     public static ExecResult fail(String message) {
-        return new ExecResult(Outcome.FAIL, null, null, null, message, null, null, null);
+        return new ExecResult(Outcome.FAIL, null, null, null, message, false, null, null, null);
+    }
+
+    /** Transient failure (timeout, 5xx, connection error) — the engine may retry with backoff. */
+    public static ExecResult failRetryable(String message) {
+        return new ExecResult(Outcome.FAIL, null, null, null, message, true, null, null, null);
     }
 
     public static ExecResult wait(JsonNode output) {
-        return new ExecResult(Outcome.WAIT, output, null, null, null, null, null, null);
+        return new ExecResult(Outcome.WAIT, output, null, null, null, false, null, null, null);
     }
 
     public ExecResult withIdempotencyKey(String key) {
-        return new ExecResult(outcome, output, nextNodeId, resumeAt, errorMessage, key, tokensPrompt, tokensCompletion);
+        return new ExecResult(outcome, output, nextNodeId, resumeAt, errorMessage, retryable, key, tokensPrompt, tokensCompletion);
     }
 
     public ExecResult withTokens(Integer prompt, Integer completion) {
-        return new ExecResult(outcome, output, nextNodeId, resumeAt, errorMessage, idempotencyKey, prompt, completion);
+        return new ExecResult(outcome, output, nextNodeId, resumeAt, errorMessage, retryable, idempotencyKey, prompt, completion);
     }
 }

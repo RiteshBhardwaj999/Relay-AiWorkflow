@@ -65,7 +65,9 @@ public class HttpRequestExecutor implements NodeExecutor {
             int status = response.getStatusCode().value();
             JsonNode parsedBody = parse(response.getBody());
             if (status < 200 || status >= 300) {
-                return ExecResult.fail("http_request " + method + " " + url + " returned " + status + ": " + parsedBody);
+                String msg = "http_request " + method + " " + url + " returned " + status + ": " + parsedBody;
+                // 5xx is transient (server down / injected failure); 4xx is a deterministic reject.
+                return status >= 500 ? ExecResult.failRetryable(msg) : ExecResult.fail(msg);
             }
             ObjectNode output = mapper.createObjectNode();
             output.put("status", status);
@@ -73,7 +75,8 @@ public class HttpRequestExecutor implements NodeExecutor {
             ExecResult result = ExecResult.continueTo(output, ctx.next());
             return mutating ? result.withIdempotencyKey(key) : result;
         } catch (Exception e) {
-            return ExecResult.fail("http_request " + method + " " + url + " error: " + e.getMessage());
+            // Timeouts / connection errors are transient — safe to retry (idempotency key is stable).
+            return ExecResult.failRetryable("http_request " + method + " " + url + " error: " + e.getMessage());
         }
     }
 

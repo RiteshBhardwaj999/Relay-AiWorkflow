@@ -53,9 +53,15 @@ public class NotifyExecutor implements NodeExecutor {
         }
 
         String key = ctx.idempotencyKey();
-        MockWorldClient.Result result = world.post(path, payload, key);
+        MockWorldClient.Result result;
+        try {
+            result = world.post(path, payload, key);
+        } catch (Exception e) {
+            return ExecResult.failRetryable("notify (" + channel + ") error: " + e.getMessage());
+        }
         if (!result.isSuccess()) {
-            return ExecResult.fail("notify (" + channel + ") failed: " + result.status() + " " + result.body());
+            String msg = "notify (" + channel + ") failed: " + result.status() + " " + result.body();
+            return result.status() >= 500 ? ExecResult.failRetryable(msg) : ExecResult.fail(msg);
         }
         return ExecResult.continueTo(result.body(), ctx.next()).withIdempotencyKey(key);
     }
