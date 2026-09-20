@@ -3,7 +3,7 @@
 Living status board. Legend: ✅ done · 🚧 in progress · ⬜ not started.
 Plan: [`docs/PLAN.md`](docs/PLAN.md) · Prompts: [`docs/PROMPTS.md`](docs/PROMPTS.md)
 
-_Last updated: 2026-09-19 (Phases 0–7 complete)_
+_Last updated: 2026-09-19 (ALL phases 0–11 complete ✅)_
 
 ## Setup / meta
 - ✅ Understand requirements (both PDFs) + inspect repo
@@ -35,10 +35,10 @@ _Last updated: 2026-09-19 (Phases 0–7 complete)_
 | 5 | Deterministic nodes (http/condition/delay/notify) | ✅ | slow_fulfillment E2E; durable non-blocking delay; idem keys once in ledger |
 | 6 | Durability & crash recovery | ✅ | kill-mid-delay → resume; duplication_check.py PASS (each effect once) |
 | 7 | Approvals, retries, caps | ✅ | approve/reject/409; cap stops wf_runaway @12; retry×3 backoff on 503; order_action gate wired |
-| 8 | AI node (adapter+mock, schema, repair retry) | ⬜ | `wf_support_triage` |
-| 9 | Web console (Thymeleaf) | ⬜ | |
-| 10 | Testing & verification | ⬜ | `smoke_test.py` passes |
-| 11 | Docs & demo | ⬜ | README + video script |
+| 8 | AI node (adapter+mock, schema, repair retry) | ✅ | triage complaint/refund/inject; schema+repair; tokens; injection stays gated, order untouched |
+| 9 | Web console (Thymeleaf) | ✅ | workflows/runs/trace/approvals; approve button resumes run |
+| 10 | Testing & verification | ✅ | 12 unit pass (2 skip); smoke 28/0; duplication_check PASS; docs/VERIFICATION.md |
+| 11 | Docs & demo | ✅ | README, docs/DEMO.md, docs/VIDEO_SCRIPT.md, docs/VERIFICATION.md |
 
 ## Good-To-Have (post-11)
 - ⬜ NL compiler `POST /workflows/compile` + eval over `nl_eval.jsonl`
@@ -46,9 +46,14 @@ _Last updated: 2026-09-19 (Phases 0–7 complete)_
 - ⬜ Schedules (cron-fired runs)
 
 ## Definition of done
-- ⬜ Deterministic + AI nodes execute with schema validation
-- ⬜ Kill-and-resume: zero duplicate side effects
-- ⬜ Approval gates enforce human approval; injection can't bypass
-- ⬜ Step cap stops runaway; injection fails safely
-- ⬜ Complete audit trail (traces, timing, tokens)
-- ⬜ smoke_test + duplication_check pass; README + demo + verification report
+- ✅ Deterministic + AI nodes execute with schema validation
+- ✅ Kill-and-resume: zero duplicate side effects (duplication_check PASS)
+- ✅ Approval gates enforce human approval; injection can't bypass (order stays untouched)
+- ✅ Step cap stops runaway (wf_runaway fails @12); injection fails safely
+- ✅ Complete audit trail (traces, timing, tokens)
+- ✅ smoke_test (28/0) + duplication_check pass; README + demo + verification report delivered
+
+## Remaining (owner: user)
+- ⬜ Commit + push to GitHub (user handles commits)
+- ⬜ Record explainer video (script in docs/VIDEO_SCRIPT.md)
+- ⬜ Optional/Good-To-Have: NL compiler, real Anthropic provider, schedules

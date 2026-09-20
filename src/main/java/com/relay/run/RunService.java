@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.relay.common.Ids;
 import com.relay.engine.queue.RunQueue;
 import com.relay.run.dto.RunDetail;
+import com.relay.run.dto.RunSummary;
 import com.relay.web.error.ApiException;
 import com.relay.workflow.Workflow;
 import com.relay.workflow.WorkflowService;
@@ -13,6 +14,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 /**
  * Creates runs from triggers. Each run captures an immutable snapshot of the workflow definition
@@ -104,5 +107,10 @@ public class RunService {
     public RunDetail getDetail(String runId) {
         Run run = require(runId);
         return RunDetail.from(run, steps.findByRunIdOrderBySequenceAsc(runId));
+    }
+
+    @Transactional(readOnly = true)
+    public List<RunSummary> recent() {
+        return runs.findTop100ByOrderByStartedAtDesc().stream().map(RunSummary::from).toList();
     }
 }
