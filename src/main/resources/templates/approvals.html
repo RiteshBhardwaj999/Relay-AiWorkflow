@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Relay — Approvals')}"></head>
+<body>
+<nav th:replace="~{fragments :: nav('approvals')}"></nav>
+<main>
+    <h1>Pending approvals</h1>
+    <table>
+        <thead>
+        <tr><th>ID</th><th>Run</th><th>Node</th><th>Message</th><th>Created</th><th>Action</th></tr>
+        </thead>
+        <tbody>
+        <tr th:each="a : ${approvals}">
+            <td><code th:text="${a.id}"></code></td>
+            <td><a th:href="@{/console/runs/{id}(id=${a.runId})}"><code th:text="${a.runId}"></code></a></td>
+            <td><code th:text="${a.nodeId}"></code></td>
+            <td th:text="${a.message}"></td>
+            <td class="muted" th:text="${a.createdAt}"></td>
+            <td>
+                <form class="inline" method="post" th:action="@{/console/approvals/{id}/approve(id=${a.id})}">
+                    <button class="btn approve small" type="submit">Approve</button>
+                </form>
+                <form class="inline" method="post" th:action="@{/console/approvals/{id}/reject(id=${a.id})}">
+                    <button class="btn reject small" type="submit">Reject</button>
+                </form>
+            </td>
+        </tr>
+        <tr th:if="${approvals.isEmpty()}"><td colspan="6" class="empty">No pending approvals.</td></tr>
+        </tbody>
+    </table>
+</main>
+</body>
+</html>

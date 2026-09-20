@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Relay — Workflows')}"></head>
+<body>
+<nav th:replace="~{fragments :: nav('workflows')}"></nav>
+<main>
+    <h1>Workflows</h1>
+    <table>
+        <thead>
+        <tr><th>ID</th><th>Name</th><th>Status</th><th>Updated</th></tr>
+        </thead>
+        <tbody>
+        <tr th:each="w : ${workflows}">
+            <td><code th:text="${w.id}"></code></td>
+            <td th:text="${w.name}"></td>
+            <td><span class="badge" th:classappend="${w.status}" th:text="${w.status}"></span></td>
+            <td class="muted" th:text="${w.updatedAt}"></td>
+        </tr>
+        <tr th:if="${workflows.isEmpty()}"><td colspan="4" class="empty">No workflows.</td></tr>
+        </tbody>
+    </table>
+</main>
+</body>
+</html>

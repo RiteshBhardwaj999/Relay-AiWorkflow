@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head(title)">
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title th:text="${title}">Relay</title>
+    <link rel="stylesheet" th:href="@{/relay.css}"/>
+</head>
+<body>
+<nav th:fragment="nav(active)" class="nav">
+    <span class="brand">Relay</span>
+    <a th:href="@{/console/workflows}" th:classappend="${active == 'workflows'} ? 'on'">Workflows</a>
+    <a th:href="@{/console/runs}" th:classappend="${active == 'runs'} ? 'on'">Runs</a>
+    <a th:href="@{/console/approvals}" th:classappend="${active == 'approvals'} ? 'on'">Approvals</a>
+</nav>
+</body>
+</html>

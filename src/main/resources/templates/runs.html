@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Relay — Runs')}"></head>
+<body>
+<nav th:replace="~{fragments :: nav('runs')}"></nav>
+<main>
+    <h1>Run history</h1>
+    <table>
+        <thead>
+        <tr><th>Run</th><th>Workflow</th><th>Status</th><th>Trigger</th><th>Steps</th><th>Started</th><th>Finished</th></tr>
+        </thead>
+        <tbody>
+        <tr th:each="r : ${runs}">
+            <td><a th:href="@{/console/runs/{id}(id=${r.runId})}"><code th:text="${r.runId}"></code></a></td>
+            <td><code th:text="${r.workflowId}"></code></td>
+            <td><span class="badge" th:classappend="${r.status}" th:text="${r.status}"></span></td>
+            <td class="muted" th:text="${r.triggerType}"></td>
+            <td th:text="${r.stepsExecuted}"></td>
+            <td class="muted" th:text="${r.startedAt}"></td>
+            <td class="muted" th:text="${r.finishedAt}"></td>
+        </tr>
+        <tr th:if="${runs.isEmpty()}"><td colspan="7" class="empty">No runs yet.</td></tr>
+        </tbody>
+    </table>
+</main>
+</body>
+</html>

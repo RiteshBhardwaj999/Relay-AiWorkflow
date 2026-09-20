@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Relay — Run')}"></head>
+<body>
+<nav th:replace="~{fragments :: nav('runs')}"></nav>
+<main>
+    <h1>Run <code th:text="${run.runId}"></code></h1>
+    <div class="meta">
+        <div><span>Workflow</span><code th:text="${run.workflowId}"></code></div>
+        <div><span>Status</span><span class="badge" th:classappend="${run.status}" th:text="${run.status}"></span></div>
+        <div><span>Trigger</span><span th:text="${run.triggerType}"></span></div>
+        <div><span>Steps</span><span th:text="${run.stepsExecuted}"></span></div>
+        <div><span>AI tokens</span><span th:text="${run.aiTokensUsed}"></span></div>
+        <div><span>Started</span><span class="muted" th:text="${run.startedAt}"></span></div>
+        <div><span>Finished</span><span class="muted" th:text="${run.finishedAt}"></span></div>
+    </div>
+
+    <div class="err" th:if="${run.error != null}">
+        <strong>Error:</strong> <span th:text="${run.error.toString()}"></span>
+    </div>
+
+    <h2>Trace</h2>
+    <table>
+        <thead>
+        <tr><th>#</th><th>Node</th><th>Type</th><th>Status</th><th>Attempt</th><th>ms</th><th>Tokens</th><th>Idempotency key</th><th>Input</th><th>Output</th></tr>
+        </thead>
+        <tbody>
+        <tr th:each="s : ${run.steps}">
+            <td th:text="${s.sequence}"></td>
+            <td><code th:text="${s.nodeId}"></code></td>
+            <td class="muted" th:text="${s.type}"></td>
+            <td><span class="badge" th:classappend="${s.status}" th:text="${s.status}"></span></td>
+            <td th:text="${s.attempt}"></td>
+            <td class="muted" th:text="${s.durationMs}"></td>
+            <td class="muted" th:text="${(s.tokensPrompt != null ? s.tokensPrompt : 0) + '/' + (s.tokensCompletion != null ? s.tokensCompletion : 0)}"></td>
+            <td><code class="muted" th:text="${s.idempotencyKey}"></code></td>
+            <td><pre th:text="${s.input != null ? s.input.toString() : ''}"></pre></td>
+            <td><pre th:text="${s.output != null ? s.output.toString() : ''}"></pre></td>
+        </tr>
+        <tr th:if="${run.steps.isEmpty()}"><td colspan="10" class="empty">No steps recorded.</td></tr>
+        </tbody>
+    </table>
+    <p style="margin-top:16px"><a th:href="@{/console/runs}">&larr; Back to runs</a></p>
+</main>
+</body>
+</html>
