@@ -1,3 +1,13 @@
+### Secrets / local env (never commit API keys) ###
+.env
+.env.*
+!.env.example
+*.env
+application-local.yml
+application-local.yaml
+application-local.properties
+secrets.properties
+
 ### Maven ###
 target/
 !.mvn/wrapper/maven-wrapper.jar

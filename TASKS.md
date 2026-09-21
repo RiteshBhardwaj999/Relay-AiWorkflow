@@ -42,7 +42,8 @@ _Last updated: 2026-09-19 (ALL phases 0–11 complete ✅)_
 
 ## Good-To-Have (post-11)
 - ⬜ NL compiler `POST /workflows/compile` + eval over `nl_eval.jsonl`
-- ⬜ Real Anthropic `AiProvider` drop-in
+- ✅ Real AI provider drop-in — `OpenAiCompatibleAiProvider` (OpenRouter/OpenAI-compatible),
+     selected via `relay.ai.provider=openrouter` + `RELAY_AI_API_KEY` + `RELAY_AI_MODEL`; mock stays default
 - ⬜ Schedules (cron-fired runs)
 
 ## Definition of done

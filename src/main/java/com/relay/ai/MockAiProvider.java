@@ -3,7 +3,6 @@ package com.relay.ai;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.springframework.stereotype.Component;
 
 import java.util.Locale;
 
@@ -16,9 +15,9 @@ import java.util.Locale;
  * would, say, redirect a notification or grant an approval. Prompt-injection text in the input is
  * just more words to classify; the approval gate and step cap are enforced by the engine anyway.
  *
- * <p>This is the default provider; a real {@link AiProvider} can be added later as {@code @Primary}.
+ * <p>This is the default provider (see {@code AiConfig}); a real provider replaces it when
+ * {@code relay.ai.provider} is set.
  */
-@Component
 public class MockAiProvider implements AiProvider {
 
     private final ObjectMapper mapper;
