@@ -7,7 +7,7 @@ services:
       POSTGRES_USER: relay
       POSTGRES_PASSWORD: relay
     ports:
-      - "5433:5432"
+      - "5433:5432"          # host:container — 5433 avoids clashing with a local Postgres
     volumes:
       - relay-pgdata:/var/lib/postgresql/data
     healthcheck:
@@ -20,12 +20,52 @@ services:
     image: redis:7
     container_name: relay-redis
     ports:
-      - "6380:6379"
+      - "6380:6379"          # 6380 avoids clashing with a local Redis
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
       timeout: 3s
       retries: 10
+
+  # The external world Relay's workflows act on (email, chat, orders, refunds) + idempotency ledger.
+  mockworld:
+    image: python:3.12-slim
+    container_name: relay-mockworld
+    working_dir: /scripts
+    volumes:
+      - ./relay-capstone-pack/scripts:/scripts:ro
+    command: ["python", "mock_world.py", "--port", "9210"]
+    ports:
+      - "9210:9210"
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:9210/health')\""]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  relay:
+    build: .
+    container_name: relay-app
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+      mockworld: { condition: service_healthy }
+    environment:
+      # Talk to the other containers by service name over the compose network.
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/relay
+      SPRING_DATASOURCE_USERNAME: relay
+      SPRING_DATASOURCE_PASSWORD: relay
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: "6379"
+      RELAY_MOCK_WORLD_URL: http://mockworld:9210
+      # Auth + AI provider — override via a local .env (see .env.example). Defaults run offline.
+      RELAY_AUTH_TOKEN: ${RELAY_AUTH_TOKEN:-relay-dev-token}
+      RELAY_AI_PROVIDER: ${RELAY_AI_PROVIDER:-mock}
+      RELAY_AI_BASE_URL: ${RELAY_AI_BASE_URL:-https://openrouter.ai/api/v1}
+      RELAY_AI_MODEL: ${RELAY_AI_MODEL:-}
+      RELAY_AI_API_KEY: ${RELAY_AI_API_KEY:-}
+    ports:
+      - "8080:8080"
 
 volumes:
   relay-pgdata:

@@ -65,24 +65,41 @@ crash during a delay is just a pending job the poller picks up when due.
 
 ## Getting started
 
-Prerequisites: Java 21, Maven, Docker Desktop, Python 3 (for the mock world + grader scripts).
+### Option A — Docker (everything in containers, recommended)
+
+Prerequisite: Docker Desktop. One command builds the app image and starts Postgres, Redis, the mock
+world, and Relay:
 
 ```bash
-# 1. datastores
-docker compose up -d            # Postgres on :5433, Redis on :6380 (non-default to avoid clashes)
-
-# 2. mock world (separate terminal) — the external systems workflows act on
-python relay-capstone-pack/scripts/mock_world.py --port 9210
-
-# 3. Relay
-mvn spring-boot:run             # http://localhost:8080  (console: /console)
+docker compose up --build            # Relay on http://localhost:8080  (console: /console)
 ```
 
-Config (`src/main/resources/application.yml`, override via env):
-`RELAY_AUTH_TOKEN` (default `relay-dev-token`, blank disables auth), `RELAY_MOCK_WORLD_URL`
-(default `http://localhost:9210`).
+`docker compose ps` shows `relay-app`, `relay-mockworld`, `relay-postgres`, `relay-redis`.
+Stop with `docker compose down` (add `-v` to wipe the database volume).
 
-> **Ports**: this machine already ran a local Postgres/Redis, so Compose maps host **5433/6380**.
+To use a real AI model instead of the built-in mock, copy `.env.example` to `.env`, set
+`RELAY_AI_PROVIDER=openrouter` + `RELAY_AI_API_KEY` + `RELAY_AI_MODEL`, and re-run
+`docker compose up` — Compose reads `.env` automatically. `.env` is gitignored.
+
+### Option B — Local dev (run the app from source)
+
+Prerequisites: Java 21, Maven, Docker (for the datastores), Python 3.
+
+```bash
+docker compose up -d postgres redis                                  # just the datastores
+python relay-capstone-pack/scripts/mock_world.py --port 9210         # separate terminal
+mvn spring-boot:run                                                  # http://localhost:8080
+```
+
+### Configuration
+Override via environment (see `.env.example`): `RELAY_AUTH_TOKEN` (default `relay-dev-token`, blank
+disables auth), `RELAY_MOCK_WORLD_URL`, and the `RELAY_AI_*` provider settings. In Docker the app
+reaches the datastores by service name (`postgres:5432`, `redis:6379`, `mockworld:9210`); seed
+workflows that hardcode `http://localhost:9210` are rewritten to the configured mock-world URL on
+load, so `http_request` nodes work inside containers too.
+
+> **Ports**: Compose maps host **5433** (Postgres) and **6380** (Redis) to avoid clashing with a
+> local install; the containers talk to each other on the standard internal ports.
 > **Timezone**: the app pins the JVM to UTC (pgjdbc rejects the `Asia/Calcutta` legacy alias).
 
 ## API

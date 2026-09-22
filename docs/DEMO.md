@@ -1,10 +1,15 @@
 # Relay — Demo Guide
 
-Reproduces the capstone demo scenarios against the seeded workflows and the mock world. All
-commands assume the setup in the [README](../README.md) is running:
+Reproduces the capstone demo scenarios against the seeded workflows and the mock world.
 
+**Fastest setup — everything in Docker:**
 ```bash
-docker compose up -d
+docker compose up --build      # starts Postgres, Redis, mock world, and Relay
+```
+
+**Or run the app from source** (datastores + mock world still needed):
+```bash
+docker compose up -d postgres redis
 python relay-capstone-pack/scripts/mock_world.py --port 9210    # terminal 2
 mvn spring-boot:run                                             # terminal 3
 ```

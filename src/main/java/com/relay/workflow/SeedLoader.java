@@ -49,10 +49,31 @@ public class SeedLoader implements ApplicationRunner {
         JsonNode root = objectMapper.readTree(Files.readString(file));
         int loaded = 0;
         for (JsonNode def : root.path("workflows")) {
-            upsertPublished(def);
+            upsertPublished(rewriteMockWorldUrls(def));
             loaded++;
         }
         log.info("Seeded {} workflow(s) as published from {}", loaded, file);
+    }
+
+    /**
+     * The seed workflows hardcode {@code http://localhost:9210} in http_request URLs. When the mock
+     * world is reachable at a different address (e.g. {@code http://mockworld:9210} inside Docker),
+     * rewrite the definition so those nodes still hit it. A no-op for the default localhost setup.
+     */
+    private JsonNode rewriteMockWorldUrls(JsonNode def) {
+        String base = properties.getMockWorld().getBaseUrl();
+        String normalized = base.endsWith("/") ? base.substring(0, base.length() - 1) : base;
+        if (normalized.equals("http://localhost:9210")) {
+            return def;
+        }
+        try {
+            String rewritten = objectMapper.writeValueAsString(def)
+                    .replace("http://localhost:9210", normalized);
+            return objectMapper.readTree(rewritten);
+        } catch (Exception e) {
+            log.warn("Could not rewrite mock-world URLs for workflow {}", def.path("id").asText(), e);
+            return def;
+        }
     }
 
     private void upsertPublished(JsonNode def) {

@@ -54,7 +54,13 @@ _Last updated: 2026-09-19 (ALL phases 0–11 complete ✅)_
 - ✅ Complete audit trail (traces, timing, tokens)
 - ✅ smoke_test (28/0) + duplication_check pass; README + demo + verification report delivered
 
+## Submission deliverables
+- ✅ GitHub repo: https://github.com/RiteshBhardwaj999/Relay-AiWorkflow (push latest + ensure public)
+- ✅ Dockerized: `docker compose up --build` runs app + Postgres + Redis + mock world; smoke 28/0 in-container
+- ✅ Detailed README (Docker + local-dev setup, API, state machine, recovery design)
+- ⬜ Explainer video <5 min — record using docs/VIDEO_SCRIPT.md (5-minute cut)
+
 ## Remaining (owner: user)
-- ⬜ Commit + push to GitHub (user handles commits)
-- ⬜ Record explainer video (script in docs/VIDEO_SCRIPT.md)
-- ⬜ Optional/Good-To-Have: NL compiler, real Anthropic provider, schedules
+- ⬜ Commit + push the Docker/AI files to GitHub
+- ⬜ Record the video
+- ⬜ Optional/Good-To-Have: NL compiler, schedules
