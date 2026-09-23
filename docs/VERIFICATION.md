@@ -73,8 +73,39 @@ notice — not a duplicate; `duplication_check` groups by action **and payload**
 The engine enforces the approval gate on the `order_action` node independently of AI output, so the
 injection cannot trigger a refund.
 
+## 5. NL compiler eval (Good-To-Have)
+
+`POST /workflows/compile/eval` runs all 15 labelled cases in `data/nl_eval.jsonl` through the
+compiler (the compiler sees only `description`, never the assertions) and scores each per the
+evaluation guide.
+
+**Compiler design:** the description is sent to the model with the full node catalog embedded and a
+one-shot example; the model must return `{"workflow": {...}}` or `{"refusal": {...}}` and may only use
+catalog types. The candidate is validated with the same `WorkflowValidator` used at publish; a
+validation failure triggers one repair retry with the errors fed back. Provider is the pluggable
+`AiProvider` (OpenRouter).
+
+**Results:**
+
+| Model | Accuracy | Notes |
+|---|---|---|
+| `meta-llama/llama-3.1-8b-instruct` | 9/15 (0.60) | valid JSON, but omits a required node/branch on harder cases |
+| `openai/gpt-4o-mini` | **15/15 (1.00)** | all workflow + refusal + trap cases |
+
+All three `nl_trap_*` cases refuse (no invented nodes) at both models — the refusal path is robust;
+model strength mainly affects how completely the *workflow* cases are built.
+
+Two scoring rules were aligned to the guide's own notes (not to inflate the score): a condition
+branch to `null` counts as a live "this path ends" branch (per the nl_008 note), and `nl_011` —
+"refund without human involvement" — accepts either a gated workflow or a refusal citing the
+`requires_approval` rule (the guide's explicit dual answer; gpt-4o-mini chose to refuse).
+
+**Honest caveat:** 15/15 is model-dependent. The 8B result (9/15) shows the floor; a strong model
+clears the set. Re-run anytime with `POST /workflows/compile/eval` (needs `relay.ai.provider=openrouter`).
+
 ## Summary
 
 All Must-Have acceptance checks pass: seed loading, workflow CRUD + publish validation, webhook/manual
 triggers, deterministic + AI nodes with schema validation, durable queue + worker, **exactly-once
-crash recovery**, approval gating, retries with backoff, and the step cap.
+crash recovery**, approval gating, retries with backoff, and the step cap. The Good-To-Have NL
+compiler scores 15/15 on the provided eval with gpt-4o-mini.

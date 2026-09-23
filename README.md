@@ -119,6 +119,8 @@ All errors are `{"error": {"message", "code"}}`.
 | `GET /runs/{id}` | run + full step trace |
 | `GET /approvals?status=pending` | list approvals |
 | `POST /approvals/{id}/approve` \| `/reject` | decide (approve resumes, reject cancels) |
+| `POST /workflows/compile` | *(Good-To-Have)* natural-language → workflow (or refusal); `?save=true` stores a draft |
+| `POST /workflows/compile/eval` | *(Good-To-Have)* run the labelled NL eval, report accuracy |
 
 Triggers return `202 {"run_id": "..."}`. Console pages live under `/console`.
 
@@ -159,6 +161,8 @@ python relay-capstone-pack/scripts/duplication_check.py --url http://localhost:9
   it runs on a standard Docker setup. Mappings were verified against the compose Postgres via psql.
 - **Single worker instance** by design (one `relay-worker` thread). The lease model supports scaling
   to multiple workers, but that isn't exercised here.
-- **AI is mocked** (deterministic classifier). A real `AiProvider` is a drop-in; the `ai` node,
-  schema validation, repair retry, and token accounting are already wired.
-- **NL compiler** (`POST /workflows/compile`) is Good-To-Have and not implemented.
+- **AI provider** defaults to a deterministic mock (offline); set `relay.ai.provider=openrouter`
+  for a real OpenAI-compatible model. The `ai` node, schema validation, repair retry, and token
+  accounting work with either.
+- **NL compiler** (`POST /workflows/compile`) is implemented (Good-To-Have) and needs a real model;
+  it scores 15/15 on the provided eval with gpt-4o-mini (see `docs/VERIFICATION.md`).

@@ -41,10 +41,11 @@ _Last updated: 2026-09-19 (ALL phases 0–11 complete ✅)_
 | 11 | Docs & demo | ✅ | README, docs/DEMO.md, docs/VIDEO_SCRIPT.md, docs/VERIFICATION.md |
 
 ## Good-To-Have (post-11)
-- ⬜ NL compiler `POST /workflows/compile` + eval over `nl_eval.jsonl`
+- ✅ NL compiler `POST /workflows/compile` (+ `/compile/eval`) — catalog-in-prompt, validate + one
+     repair retry, refusal path. Eval: 9/15 (llama-3.1-8b), **15/15 (gpt-4o-mini)**. See docs/VERIFICATION.md §5
 - ✅ Real AI provider drop-in — `OpenAiCompatibleAiProvider` (OpenRouter/OpenAI-compatible),
      selected via `relay.ai.provider=openrouter` + `RELAY_AI_API_KEY` + `RELAY_AI_MODEL`; mock stays default
-- ⬜ Schedules (cron-fired runs)
+- ⬜ Schedules (cron-fired runs) — deferred (low value, not graded)
 
 ## Definition of done
 - ✅ Deterministic + AI nodes execute with schema validation
