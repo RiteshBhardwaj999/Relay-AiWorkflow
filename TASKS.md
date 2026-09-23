@@ -61,7 +61,3 @@ _Last updated: 2026-09-19 (ALL phases 0–11 complete ✅)_
 - ✅ Detailed README (Docker + local-dev setup, API, state machine, recovery design)
 - ⬜ Explainer video <5 min — record using docs/VIDEO_SCRIPT.md (5-minute cut)
 
-## Remaining (owner: user)
-- ⬜ Commit + push the Docker/AI files to GitHub
-- ⬜ Record the video
-- ⬜ Optional/Good-To-Have: NL compiler, schedules
