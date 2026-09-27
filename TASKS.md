@@ -45,7 +45,7 @@ _Last updated: 2026-09-19 (ALL phases 0–11 complete ✅)_
      repair retry, refusal path. Eval: 9/15 (llama-3.1-8b), **15/15 (gpt-4o-mini)**. See docs/VERIFICATION.md §5
 - ✅ Real AI provider drop-in — `OpenAiCompatibleAiProvider` (OpenRouter/OpenAI-compatible),
      selected via `relay.ai.provider=openrouter` + `RELAY_AI_API_KEY` + `RELAY_AI_MODEL`; mock stays default
-- ⬜ Schedules (cron-fired runs) — deferred (low value, not graded)
+
 
 ## Definition of done
 - ✅ Deterministic + AI nodes execute with schema validation
